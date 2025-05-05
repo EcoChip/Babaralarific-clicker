@@ -1,293 +1,167 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Babalarific Clicker</title>
+  <meta charset="UTF-8">
+  <title>Clicker de Babaras</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      text-align: center;
-      background: linear-gradient(to right, #f3d9ff, #d8f3ff);
+      background: #e8f0ff;
       color: #333;
-      padding: 30px;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
     }
-
     h1 {
-      font-size: 3em;
+      font-size: 2.5rem;
       margin-bottom: 10px;
     }
-
-    #babaraButton {
-      background-color: #ff69b4;
-      border: none;
-      border-radius: 50%;
-      width: 150px;
-      height: 150px;
-      font-size: 1.2em;
-      color: white;
-      cursor: pointer;
-      transition: transform 0.1s;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      background-size: cover;
-      background-position: center;
+    #babara-count {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
     }
-
-    #babaraButton:active {
+    #click-area img {
+      width: 180px;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    #click-area img:active {
       transform: scale(0.95);
     }
-
-    .stats {
-      font-size: 1.3em;
-      margin: 10px 0;
-    }
-
-    .shop {
+    .store {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       margin-top: 30px;
     }
-
     .upgrade {
-      background: #a2e6ff;
-      padding: 15px;
-      margin: 10px auto;
-      width: 300px;
+      background: white;
       border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      margin: 10px;
+      width: 250px;
       transition: background 0.2s;
     }
-
     .upgrade:hover {
-      background: #87dfff;
+      background: #dbe9ff;
     }
-
-    .click-effect {
-      position: absolute;
+    .locked {
+      opacity: 0.5;
       pointer-events: none;
+    }
+    .upgrade-title {
       font-weight: bold;
-      animation: pop 1s ease-out forwards;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
     }
-
-    @keyframes pop {
-      0% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-50px);
-      }
+    .upgrade-info {
+      font-size: 0.9rem;
     }
-
-    .prestige {
-      margin-top: 30px;
-    }
-
-    .skin-picker {
-      margin-top: 20px;
-    }
-
-    .skin-picker img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      margin: 5px;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: border 0.2s;
-    }
-
-    .skin-picker img.selected {
-      border-color: #ff69b4;
-    }
-
-    .goldenBabara {
-      position: absolute;
-      width: 100px;
-      height: 100px;
-      background-color: gold;
-      border-radius: 50%;
-      top: -150px;
-      left: 50%;
-      animation: appear 3s ease-in-out forwards;
-      display: none;
-      cursor: pointer;
-      box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.8);
-    }
-
-    @keyframes appear {
-      0% { top: -150px; opacity: 0; }
-      50% { opacity: 1; }
-      100% { top: 20px; opacity: 0; }
-    }
-
   </style>
 </head>
 <body>
-  <h1>Babalarific Clicker</h1>
-  <p class="stats">Babaras: <span id="babaraCount">0</span></p>
-  <p class="stats">Babaras por segundo: <span id="bps">0</span></p>
-  <p class="stats">Prestigios: <span id="prestigeCount">0</span></p>
 
-  <button id="babaraButton">¡Babara!</button>
+  <h1>Clicker de Babaras</h1>
+  <div id="babara-count">Babaras: <span id="babaras">0</span></div>
 
-  <div class="shop">
-    <h2>Mejoras</h2>
-    <div class="upgrade" onclick="buy('adela')">
-      👩‍🍳 Comprar Adela (Coste: <span id="cost-adela">50</span>)<br>
-      +1 Babara/seg
-    </div>
-    <div class="upgrade" onclick="buy('superAdela')">
-      🧁 Comprar Super Adela (Coste: <span id="cost-superAdela">500</span>)<br>
-      +10 Babaras/seg
-    </div>
-    <div class="upgrade" onclick="buy('robot')">
-      🤖 Comprar Robot de Babara (Coste: <span id="cost-robot">5000</span>)<br>
-      +100 Babaras/seg
-    </div>
-    <div class="upgrade" onclick="buy('azkarate')">
-      🥋 Comprar Mejora Azkarate (Coste: <span id="cost-azkarate">10000</span>)<br>
-      +2 Babaras/seg y +1 por clic
-    </div>
+  <div id="click-area">
+    <img src="babara.png" alt="Babara" onclick="clickBabara()">
   </div>
 
-  <div class="prestige">
-    <button onclick="doPrestige()">🔄 Hacer Prestigio (Requiere 100,000 Babaras)</button>
-  </div>
-
-  <div class="skin-picker">
-    <h2>Skins de Babara</h2>
-    <img src="https://i.imgur.com/Qw7npIg.png" onclick="setSkin(this, null)" class="selected" title="Original" />
-    <img src="https://i.imgur.com/1k4hChJ.png" onclick="setSkin(this, 'https://i.imgur.com/1k4hChJ.png')" title="Galleta" />
-    <img src="https://i.imgur.com/G3S3aOz.png" onclick="setSkin(this, 'https://i.imgur.com/G3S3aOz.png')" title="Estrella" />
-  </div>
-
-  <div id="goldenBabara" class="goldenBabara" onclick="collectGoldenBabara()"></div>
+  <div class="store" id="store"></div>
 
   <script>
-    let babaras = 0;
-    let bps = 0;
-    let prestige = 0;
+    let babaras = parseFloat(localStorage.getItem("babaras")) || 0;
+    let totalBPS = 0;
 
-    const upgrades = {
-      adela: { cost: 50, bps: 1, count: 0 },
-      superAdela: { cost: 500, bps: 10, count: 0 },
-      robot: { cost: 5000, bps: 100, count: 0 },
-      azkarate: { cost: 10000, bps: 2, clickBonus: 1, count: 0 }
-    };
+    const upgrades = [
+      { name: "Mini Babara", baseCost: 10, bps: 1, amount: 0 },
+      { name: "Babara", baseCost: 100, bps: 5, amount: 0 },
+      { name: "Omega Babara", baseCost: 500, bps: 20, amount: 0 },
+      { name: "Ultra Babara", baseCost: 1500, bps: 50, amount: 0 },
+      { name: "Adela", baseCost: 5000, bps: 150, amount: 0 },
+      { name: "Adela Pomela", baseCost: 15000, bps: 300, amount: 0 },
+      { name: "Adela Ultímate", baseCost: 30000, bps: 600, amount: 0 },
+      { name: "Mini Albrecht", baseCost: 60000, bps: 1000, amount: 0 },
+      { name: "Herr Albrecht", baseCost: 100000, bps: 2000, amount: 0 },
+      { name: "Mega Albrecht", baseCost: 200000, bps: 4000, amount: 0 },
+      { name: "Mendi", baseCost: 400000, bps: 8000, amount: 0 },
+      { name: "Mendígurke", baseCost: 1000000, bps: 16000, amount: 0 },
+      { name: "Omega Gurke Mendi", baseCost: 5000000, bps: 50000, amount: 0 },
+    ];
 
-    const babaraCountElem = document.getElementById('babaraCount');
-    const bpsElem = document.getElementById('bps');
-    const prestigeElem = document.getElementById('prestigeCount');
-    const button = document.getElementById('babaraButton');
-    const goldenBabara = document.getElementById('goldenBabara');
+    const store = document.getElementById("store");
 
-    button.addEventListener('click', e => {
-      let gain = 1 + prestige + (upgrades.azkarate.count > 0 ? upgrades.azkarate.clickBonus : 0);
-      babaras += gain;
-      showClickEffect(e.clientX, e.clientY, `+${gain}`);
-      updateUI();
-    });
-
-    function buy(type) {
-      const u = upgrades[type];
-      if (babaras >= u.cost) {
-        babaras -= u.cost;
-        u.count++;
-        bps += u.bps;
-        if (type === 'azkarate') {
-          bps += u.bps; // Incremento adicional de Babaras por segundo
-        }
-        u.cost = Math.floor(u.cost * 1.3);
-        updateUI();
-      }
+    function getCost(index) {
+      return upgrades[index].baseCost * Math.pow(1.15, upgrades[index].amount);
     }
 
-    function updateUI() {
-      babaraCountElem.textContent = Math.floor(babaras);
-      bpsElem.textContent = bps;
-      prestigeElem.textContent = prestige;
-      document.getElementById('cost-adela').textContent = upgrades.adela.cost;
-      document.getElementById('cost-superAdela').textContent = upgrades.superAdela.cost;
-      document.getElementById('cost-robot').textContent = upgrades.robot.cost;
-      document.getElementById('cost-azkarate').textContent = upgrades.azkarate.cost;
+    function updateDisplay() {
+      document.getElementById("babaras").innerText = babaras.toFixed(1);
+      store.innerHTML = "";
+
+      upgrades.forEach((u, i) => {
+        const cost = getCost(i);
+        const el = document.createElement("div");
+        el.className = "upgrade";
+        
+        // Bloqueo progresivo
+        const locked = (i > 0 && upgrades[i - 1].amount < 10);
+        if (locked) el.classList.add("locked");
+
+        el.innerHTML = `
+          <div class="upgrade-title">${u.name} (${u.amount})</div>
+          <div class="upgrade-info">Costo: ${cost.toFixed(1)} | +${u.bps} BPS</div>
+        `;
+        if (!locked) el.onclick = () => buyUpgrade(i);
+        store.appendChild(el);
+      });
     }
 
-    function showClickEffect(x, y, text) {
-      const span = document.createElement('span');
-      span.textContent = text;
-      span.className = 'click-effect';
-      span.style.left = `${x}px`;
-      span.style.top = `${y}px`;
-      document.body.appendChild(span);
-      setTimeout(() => span.remove(), 1000);
+    function clickBabara() {
+      babaras += 1;
+      saveGame();
+      updateDisplay();
     }
 
-    function collectGoldenBabara() {
-      babaras += 10000;
-      goldenBabara.style.display = 'none';
-      updateUI();
-    }
-
-    function spawnGoldenBabara() {
-      if (Math.random() < 0.01) {
-        goldenBabara.style.display = 'block';
-      }
-    }
-
-    function doPrestige() {
-      if (babaras >= 100000) {
-        babaras = 0;
-        bps = 0;
-        prestige++;
-        for (let key in upgrades) {
-          upgrades[key].count = 0;
-          upgrades[key].cost = {
-            adela: 50,
-            superAdela: 500,
-            robot: 5000,
-            azkarate: 10000
-          }[key];
-        }
-        updateUI();
+    function buyUpgrade(index) {
+      const cost = getCost(index);
+      if (babaras >= cost) {
+        babaras -= cost;
+        upgrades[index].amount += 1;
+        totalBPS += upgrades[index].bps;
         saveGame();
+        updateDisplay();
       }
     }
 
-    function setSkin(imgEl, url) {
-      document.querySelectorAll('.skin-picker img').forEach(i => i.classList.remove('selected'));
-      imgEl.classList.add('selected');
-      button.style.backgroundImage = url ? `url('${url}')` : '';
+    function generateBabaras() {
+      babaras += totalBPS / 10;
+      saveGame();
+      updateDisplay();
     }
 
-    setInterval(() => {
-      babaras += bps;
-      spawnGoldenBabara();
-      updateUI();
-    }, 1000);
-
-    // Guardado y carga automática
     function saveGame() {
-      const data = {
-        babaras, bps, prestige, upgrades
-      };
-      localStorage.setItem("babaraGame", JSON.stringify(data));
+      localStorage.setItem("babaras", babaras);
+      localStorage.setItem("upgrades", JSON.stringify(upgrades));
     }
 
     function loadGame() {
-      const saved = localStorage.getItem("babaraGame");
-      if (saved) {
-        const data = JSON.parse(saved);
-        babaras = data.babaras || 0;
-        bps = data.bps || 0;
-        prestige = data.prestige || 0;
-        Object.assign(upgrades, data.upgrades);
-        updateUI();
+      const savedUpgrades = JSON.parse(localStorage.getItem("upgrades"));
+      if (savedUpgrades) {
+        for (let i = 0; i < upgrades.length; i++) {
+          if (savedUpgrades[i]) {
+            upgrades[i].amount = savedUpgrades[i].amount;
+            totalBPS += upgrades[i].bps * upgrades[i].amount;
+          }
+        }
       }
     }
 
     loadGame();
-    setInterval(saveGame, 5000);
+    updateDisplay();
+    setInterval(generateBabaras, 100);
   </script>
 </body>
 </html>
